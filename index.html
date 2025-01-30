@@ -1,12 +1,207 @@
-<!-- Buscador medicamentos -->
-<div class="container">     
-  <div class="input-group">
-      <span>Buscar: </span><input type="text" id="search" placeholder="Escribe el nombre del medicamento..." oninput="buscarMedicamento()">
-  </div>
-  <div class="results" id="results"></div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Medicamentos</title>
+   
+</head>
+<body>
+
+<div class="container">
+    <h2>lista</h2>
+    <div class="input-group">
+        <input type="text" id="search1" placeholder="Escribe el nombre del medicamento..." oninput="buscarMedicamento('search1', 'results1', medicamentos1, false)">
+    </div>
+    <div class="results" id="results1"></div>
 </div>
 
+<div class="container">
+    <h2>disponibilidad</h2>
+    <div class="input-group">
+        <input type="text" id="search2" placeholder="Escribe el nombre del medicamento..." oninput="buscarMedicamento('search2', 'results2', medicamentos2, true)">
+    </div>
+    <div class="results" id="results2"></div>
+</div>
 
-<!-- Generación dinámica de las filas -->
-<div id="formularioMedicamentos"></div>
-<script src="lechuga2.js"></script>
+<script>
+    // Lista de medicamentos para el primer buscador (sin disponibilidad)
+    const medicamentos1 = [
+        { "nombre": "Salbutamol. Jarabe cada 5 ml contiene sulfato de salbutamol equivalente a 2 mg de salbutamol envase con 60 ml" },
+        { "nombre": "Salbutamol. Solución para nebulizador. Cada 100 ml contienen: Sulfato de salbutamol 0.5 g. Envase con 10 ml" },
+        { "nombre": "Salbutamol. Suspensión en aerosol. Cada inhalador contiene: Salbutamol 20 mg o Sulfato de salbutamol equivalente a 20 mg de salbutamol. Envase con inhalador con 200 dosis de 100 µg" },
+        { "nombre": "Salmeterol, Fluticasona. Suspensión en aerosol. Cada dosis contiene: Xinafoato de salmeterol equivalente a 25 mcg de salmeterol. Propionato de fluticasona 50 mcg. Envase con dispositivo inhalador para 120 dosis" },
+        { "nombre": "Sensidós a-b. Tableta Cada Tableta contiene: Concentrados de Sen desecados 187 mg (normalizado a 8.6 mg de sensidós A-B). Envase con 20 Tabletas" },
+        { "nombre": "Sertralina. Capsula o tableta. Cada Capsula o Tableta contiene: Clorhidrato de sertralina equivalente a 50 mg. De sertralina. Envase con 14 Cápsulas o tabletas" },
+        { "nombre": "Solución Hartmann Solución inyectable Cloruro de sodio 6.000 g Cloruro de potasio 0.030 g Cloruro de calcio dihidratado 0.020 g Lactato de sodio 0.310 g, miliequivalentes por litro: sodio 130, potasio 4 calcio 2.72, cloruro 109, lactato 28. Envase con 1000 ml" },
+        { "nombre": "Sulfato ferroso. Tableta, cada tableta contiene: sulfato ferroso desecado aproximadamente 200 mg equivalente a 60.27 mg. De hierro elemental. Envase con 30 tabletas" },
+        { "nombre": "Vitamina A Cy D. Solución. Cada ml contiene: palmitato de retinol 7000 a 9000 UI. Acido ascorbico 80 a 125 mg. Colecalciferol 1400 a 1800 UI. Envase con 15 ml" },
+        { "nombre": "Carbón Activado. Polvo. Cada envase contiene: carbón activado 1kg. Envase con 1kg." },
+  { "nombre": "Cefalexina. Tableta o cápsula. Cada cápsula contiene: cefalexina monohidratada equivalente a 500 mg." },
+  { "nombre": "Ceftriaxona. Solución inyectable. Cada frasco ampolla con polvo contiene: ceftriaxona sódica equivalente a 1 g de ceftriaxona." },
+  { "nombre": "Cinarizina. Tableta. Cada tableta contiene: cinarizina 75 mg." },
+  { "nombre": "Ciprofloxacino. Cápsula o tableta. Cada cápsula o tableta contiene: ciprofloxacino monohidratado equivalente a 500 mg de ciprofloxacino." },
+  { "nombre": "Clindamicina. Cápsula. Cada cápsula contiene: Clorhidrato de clindamicina equivalente a 300 mg de clindamicina." },
+  { "nombre": "Clioquinol. Crema. Cada g contiene: Clioquinol 30 mg." },
+  { "nombre": "Clopidogrel. Gragea o tableta. Cada gragea o tableta contiene: Bisulfato de clopidogrel equivalente a 75 mg de clopidogrel." },
+  { "nombre": "Cloranfenicol. Ungüento oftálmico. Cada gramo contiene: Cloranfenicol levo giro 5 mg." },
+  { "nombre": "Clorfenamina compuesta. Tableta. Cada tableta contiene: paracetamol 500 mg, cafeína 25 mg, clorhidrato de fenilefrina 5 mg, maleato de clorfenamina 4 mg." },
+  { "nombre": "Naproxeno. Tableta. Cada tableta contiene: Naproxeno 250 mg." },
+  { "nombre": "Neomicina, Polimixina B, Sulfato de y Gramicidina. Solución oftálmica." },
+  { "nombre": "Nifedipino. Cápsula de gelatina blanda. Cada cápsula contiene: Nifedipino 10 mg." },
+  { "nombre": "Nifedipino. Comprimido de liberación prolongada. Cada comprimido contiene: Nifedipino 30 mg." },
+  { "nombre": "Nistatina. Óvulo o Tableta Vaginal. Cada óvulo o tableta contiene: Nistatina 100 000 UI." },
+  { "nombre": "Nitrofurazona. Óvulo. Cada óvulo contiene: Nitrofural 6 mg." },
+  { "nombre": "Nitrofurantoína. Cápsula. Cada cápsula contiene: Nitrofurantoína 100 mg." },
+  { "nombre": "Óxido de Zinc. Pasta. Cada 100 g contienen: Óxido de zinc 25.0 g." },
+  { "nombre": "Paracetamol. Tableta. Cada tableta contiene: Paracetamol 500 mg." },
+  { "nombre": "Plántago Psyllium. Polvo. Cada 100 g contienen: Polvo de cáscara de semilla de plántago psyllium 49.7 g." },
+  { "nombre": "Podofilina. Solución dérmica. Cada ml contiene: Resina de podofilina 250 mg." },
+  { "nombre": "Pravastatina. Tableta. Cada tableta contiene: Pravastatina sódica 10 mg." },
+  { "nombre": "Pregabalina. Cápsula. Cada cápsula contiene: Pregabalina 75 mg." },
+  { "nombre": "Losartán. Grageas o comprimidos recubiertos. Contienen: Losartán potásico 50 mg." },
+  { "nombre": "Metamizol sódico. Comprimido. Cada comprimido contiene: Metamizol sódico 500 mg." },
+  { "nombre": "Metamizol sódico. Solución inyectable. Cada ampolleta contiene: Metamizol sódico 1 g." },
+  { "nombre": "Metformina. Tableta. Cada tableta contiene: Clorhidrato de metformina 850 mg." },
+  { "nombre": "Metildopa. Tableta. Cada tableta contiene: Metildopa 250 mg." },
+  { "nombre": "Metoclopramida. Solución. Cada ml contiene: Clorhidrato de metoclopramida 4 mg." },
+  { "nombre": "Metoprolol. Tableta. Cada tableta contiene: Tartarato de metoprolol 100 mg." },
+  { "nombre": "Metronidazol. Óvulo o Tableta Vaginal. Cada óvulo o tableta contiene: Metronidazol 500 mg." },
+  { "nombre": "Metronidazol. Suspensión Oral. Cada 5 ml contienen: Benzoilo de metronidazol equivalente a 250 mg de metronidazol." },
+  { "nombre": "Metronidazol. Tableta. Cada tableta contiene: Metronidazol 500 mg." },
+  { "nombre": "Miconazol. Crema. Cada gramo contiene: Nitrato de miconazol 20 mg." },
+  { "nombre": "Multivitaminas y minerales. Jarabe." },
+  { "nombre": "Fenazopiridina. Tableta. Cada tableta contiene: Clorhidrato de fenazopiridina 100 mg." },
+  { "nombre": "Fenitoína. Tableta o Cápsula. Cada tableta o cápsula contiene: Fenitoína sódica 100 mg." },
+  { "nombre": "Fluoxetina. Cápsula o tableta. Cada cápsula o tableta contiene: Clorhidrato de fluoxetina equivalente a 20 mg de fluoxetina." },
+  { "nombre": "Fumarato ferroso. Tableta. Cada tableta contiene: Fumarato ferroso 200 mg equivalente a 65.74 mg de hierro elemental." },
+  { "nombre": "Gabapentina. Cápsula. Cada cápsula contiene: Gabapentina 300 mg." },
+  { "nombre": "Gentamicina. Solución inyectable. Cada ampolleta contiene: Sulfato de Gentamicina equivalente a 20 mg de gentamicina." },
+  { "nombre": "Gentamicina. Solución inyectable. Cada ampolleta contiene: Sulfato de Gentamicina equivalente a 80 mg de gentamicina." },
+  { "nombre": "Glibenclamida. Tableta. Cada tableta contiene: Glibenclamida 5 mg." },
+  { "nombre": "Glimepirida. Tableta. Cada tableta contiene: Glimepirida 2 mg." },
+  { "nombre": "Glucosa anhidra. Solución inyectable al 5%." },
+  { "nombre": "Glucosa. Solución inyectable al 5%. Cada 100 ml contienen: Glucosa anhidra o glucosa 5 g o glucosa monohidratada equivalente a 5.0 g de glucosa." },
+  { "nombre": "Difenhidramina. Jarabe. Cada 100 mililitros contienen: clorhidrato de difenhidramina 250 mg." },
+  { "nombre": "Difenhidramina. Solución inyectable. Cada frasco ampolla contiene: clorhidrato de difenhidramina 100 mg." },
+  { "nombre": "Difenidol. Clorhidrato de solución inyectable 40 mg/2 ml." },
+  { "nombre": "Difenidol. Tableta. Cada tableta contiene: Clorhidrato de difenidol equivalente a 25 mg de difenidol." },
+  { "nombre": "Dipropionato de Beclometasona. Suspensión en aerosol. Cada inhalación contiene: Dipropionato de Beclometasona 50 mg." },
+  { "nombre": "Doxiciclina. Cápsula o Tableta. Cada cápsula o tableta contiene: Clorhidrato de doxiciclina equivalente a 100 mg de doxiciclina." },
+  { "nombre": "Electrolitos Orales. Polvo (Fórmula de osmolaridad Baja)." },
+  { "nombre": "Enalapril. Cápsula o Tableta. Cada cápsula o tableta contiene: Maleato de enalapril 10 mg." },
+  { "nombre": "Eritromicina. Estearato de cápsula o tableta 500 mg." },
+  { "nombre": "Estrógeno conjugado. Grageas o tabletas. Cada gragea o tableta contiene: estrógenos conjugados de origen equino 0.625 mg." },
+  { "nombre": "Estrógenos conjugados. Crema vaginal cada 100 g." },
+  { "nombre": "Clorfenamina. Tableta. Cada 100 ml contiene: maleato de clorfenamina 4.0 mg." },
+  { "nombre": "Cloruro de sodio. Solución inyectable al 0.9%." },
+  { "nombre": "Complejo B. Tableta Comprimido o Cápsula. Contiene varias vitaminas del complejo B." },
+  { "nombre": "Dexametasona. Solución inyectable. Cada frasco ampolla contiene: fosfato sódico de dexametasona equivalente a 4 mg." },
+  { "nombre": "Dextrometorfano. Jarabe. Cada 100 ml contiene: Bromhidrato de dextrometorfano 300 mg." },
+  { "nombre": "Diclofenaco. Cápsula o gragea de liberación prolongada. Cada gragea contiene: Diclofenaco sódico 100 mg." },
+  { "nombre": "Diclofenaco. Solución inyectable. Cada ampolleta contiene: Diclofenaco sódico 75 mg." },
+  { "nombre": "Dicloxacilina. Cápsula o comprimido. Cada cápsula o comprimido contiene: Dicloxacilina sódica 500 mg." },
+  { "nombre": "Dicloxacilina. Suspensión Oral. Cada 5 ml contienen: Dicloxacilina sódica 250 mg." },
+  { "nombre": "Hidralazina. Tableta. Cada Tableta contiene: Clorhidrato de hidralazina 10 mg." },
+  { "nombre": "Hidrocortisona. Crema. Cada gramo contiene: Butirato de hidrocortisona 1 mg." },
+  { "nombre": "Hipromelosa. Solución oftálmica al 0.5%." },
+  { "nombre": "Ibuprofeno. Suspensión Oral. Cada 5 ml contienen: Ibuprofeno 40 mg." },
+  { "nombre": "Indometacina. Cápsula 25 mg." },
+  { "nombre": "Isoconazol. Crema. Cada 100 gramos contienen: Nitrato de isoconazol 1 g." },
+  { "nombre": "Isosorbida. Tableta sublingual. Cada Tableta contiene: Dinitrato de isosorbida 5 mg." },
+  { "nombre": "Isosorbida. Tableta. Cada Tableta contiene: Dinitrato de isosorbida 10 mg." },
+  { "nombre": "Itraconazol. Cápsula. Cada Cápsula contiene: Itraconazol 100 mg." },
+  { "nombre": "Ketoconazol. Tableta. Cada tableta contiene: Ketoconazol 200 mg." },
+  { "nombre": "Ketoprofeno. Cápsula. Cada cápsula contiene: Ketoprofeno 100 mg." },
+  { "nombre": "Lidocaína. Solución Inyectable al 2%." },
+  { "nombre": "Loperamida. Comprimido tableta o gragea. Cada comprimido tableta o gragea contiene: Clorhidrato de loperamida 2 mg." },
+  { "nombre": "Loratadina. Tableta o gragea. Cada tableta o gragea contiene: Loratadina 10 mg." },
+  { "nombre": "Ácido acetilsalicílico. Tableta soluble o efervescente. Cada tableta contiene: Ácido acetilsalicílico 300 mg." },
+  { "nombre": "Ácido acetilsalicílico. Tableta. Cada tableta contiene: Ácido acetilsalicílico 500 mg." },
+  { "nombre": "Ácido ascórbico. Tableta. Cada tableta contiene: Ácido ascórbico 100 mg." },
+  { "nombre": "Ácido fólico. Tableta. Cada tableta contiene: Ácido fólico 0.4 mg." },
+  { "nombre": "Ácido fólico. Tableta. Cada tableta contiene: Ácido fólico 5 mg." },
+  { "nombre": "Agua inyectable. Solución inyectable. Cada ampolleta contiene: Agua inyectable 10 ml." },
+  { "nombre": "Albendazol. Suspensión Oral. Cada frasco contiene: Albendazol 400 mg." },
+  { "nombre": "Alopurinol. Tableta. Cada tableta contiene: Alopurinol 300 mg." },
+  { "nombre": "Aluminio y Magnesio. Suspensión Oral. Cada 100 ml contienen: Hidróxido de aluminio 3.7 g, Hidróxido de magnesio 4.0 g, Trisilicato de magnesio 8.9 g." },
+  { "nombre": "Ambroxol. Comprimido. Cada comprimido contiene: Clorhidrato de ambroxol 30 mg." },
+  { "nombre": "Ambroxol. Solución. Cada 100 ml contienen: Clorhidrato de ambroxol 300 mg." },
+  { "nombre": "Amoxicilina. Cápsula. Cada cápsula contiene: Amoxicilina trihidratada equivalente a 500 mg de amoxicilina." },
+  { "nombre": "Betametasona. Tableta. Cada tableta contiene: Betametasona 0.5 mg." },
+  { "nombre": "Betametasona. Dipropionato de suspensión en aerosol. Cada inhalación contiene: Dipropionato de betametasona 250 mcg." },
+  { "nombre": "Bromhexina. Tableta. Cada tableta contiene: Bromhexina 8 mg." },
+  { "nombre": "Butilhioscina o Hioscina. Solución inyectable. Cada ampolleta contiene: Butilhioscina o Hioscina 20 mg." },
+  { "nombre": "Calcio. Comprimido Efervescente. Cada comprimido contiene: Carbonato de calcio 600 mg." },
+  { "nombre": "Carbón Activado. Tableta o cápsula. Cada tableta contiene: Carbón activado 250 mg." },
+  { "nombre": "Ampicilina. Tableta o Cápsula. Cada tableta o cápsula contiene: Ampicilina anhidra o ampicilina trihidratada equivalente a 500 mg de ampicilina." },
+  { "nombre": "Beclometasona. Dipropionato de suspensión en aerosol. Cada inhalación contiene: Dipropionato Beclometasona 250 mg." },
+  { "nombre": "Bencilpenicilina benzatínica compuesta. Suspensión inyectable. Cada frasco ampolla con polvo contiene: Bencilpenicilina benzatínica equivalente a 600 000 UI." },
+  { "nombre": "Bencilpenicilina procaínica con bencilpenicilina cristalina. Suspensión inyectable. Procaína 300 000 UI, Cristalina 100 000 UI." },
+  { "nombre": "Benzonatato. Perla o cápsula. Cada perla o cápsula contiene: Benzonatato 100 mg." },
+  { "nombre": "Bezafibrato. Tableta. Cada tableta contiene: Bezafibrato 200 mg." },
+  { "nombre": "Butilhioscina o Hioscina. Gragea o Tableta. Cada gragea o tableta contiene: Bromuro de butilhioscina o Bromuro de hioscina 10 mg." },
+  { "nombre": "Butilhioscina o Hioscina. Solución inyectable. Cada ampolleta contiene: Bromuro de hioscina 20 mg." },
+  { "nombre": "Calcio. Comprimido Efervescente. Cada comprimido contiene: Lactato Gluconato de calcio 2.94 g, Carbonato de calcio 0.3 g." },
+  { "nombre": "Calcitriol. Cápsula de Gelatina blanda. Cada cápsula contiene: Calcitriol 0.25 mg." }
+    ];
+
+    // Lista de medicamentos para el segundo buscador (con disponibilidad)
+    const medicamentos2 = [
+        { nombre: "Paracetamol Tableta, 500 Mg Oral", disponible: 1226 },
+        { nombre: "Ibuprofeno Tableta 400 Mg", disponible: 50 },
+        { nombre: "Amoxicilina Cápsulas 500 Mg", disponible: 8 },
+        { nombre: "Metformina Tableta 850 Mg", disponible: 0 },
+        { nombre: "Omeprazol Cápsulas 20 Mg", disponible: 300 },
+        { nombre: "Losartán Tabletas 50 Mg", disponible: 20 },
+        { nombre: "Salbutamol Inhalador 100 Mcg", disponible: 5 },
+        { nombre: "Insulina Glargina 100 UI/ml", disponible: 0 }
+    ];
+
+    function buscarMedicamento(inputId, resultsId, medicamentos, mostrarDisponibilidad) {
+        const query = document.getElementById(inputId).value.toLowerCase();
+        const resultsDiv = document.getElementById(resultsId);
+        resultsDiv.innerHTML = "";
+
+        if (query.trim() === "") {
+            resultsDiv.style.display = "none";
+            return;
+        }
+
+        let resultados;
+        if (mostrarDisponibilidad) {
+            resultados = medicamentos.filter(med => med.nombre.toLowerCase().includes(query));
+        } else {
+            resultados = medicamentos.filter(med => med.nombre.toLowerCase().includes(query));
+        }
+
+        if (resultados.length > 0) {
+            resultsDiv.style.display = "block";
+            resultados.forEach(med => {
+                const div = document.createElement("div");
+                div.classList.add("result-item");
+
+                if (mostrarDisponibilidad) {
+                    // Medicamentos con disponibilidad
+                    let disponibilidadClase = "available-high";
+                    if (med.disponible > 100) disponibilidadClase = "available-high";
+                    else if (med.disponible > 10) disponibilidadClase = "available-medium";
+                    else disponibilidadClase = "available-low";
+
+                    div.innerHTML = `${med.nombre} - <span class="${disponibilidadClase}">Disponible: ${med.disponible}</span>`;
+                } else {
+                    // Medicamentos sin disponibilidad (solo mostrar el nombre)
+                    div.textContent = med.nombre;
+                }
+
+                resultsDiv.appendChild(div);
+            });
+        } else {
+            resultsDiv.style.display = "block";
+            resultsDiv.innerHTML = "<div class='result-item'>No se encontraron medicamentos.</div>";
+        }
+    }
+</script>
+
+</body>
+</html>
