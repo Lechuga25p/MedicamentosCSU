@@ -9,7 +9,7 @@
 <body>
 
 <div class="container">
-    <h2>lista</h2>
+    <h2>Lista diciembre 2024</h2>
     <div class="input-group">
         <input type="text" id="search1" placeholder="Escribe el nombre del medicamento..." oninput="buscarMedicamento('search1', 'results1', medicamentos1, false)">
     </div>
@@ -17,13 +17,32 @@
 </div>
 
 <div class="container">
-    <h2>disponibilidad</h2>
+    <h2>Disponibilidad 23/01/2025</h2>
     <div class="input-group">
         <input type="text" id="search2" placeholder="Escribe el nombre del medicamento..." oninput="buscarMedicamento('search2', 'results2', medicamentos2, true)">
     </div>
     <div class="results" id="results2"></div>
 </div>
+<br><br>
+<h2>Caluladora OBS</h2>
+<div class="container">
+    <label for="fecha">FUM:</label>
+    <input type="date" id="fecha"><br>
+    <span id="resultado"></span><br>
+    <span id="fechaParto"></span><br>
+</div>
 
+
+<div class="container">
+    <label for="semanasUltrasonido">Semanas por USG:</label>
+    <input type="text" id="semanasUltrasonido">
+    <label for="fechaUltrasonido">Fecha del ultrasonido:</label>
+    <input type="date" id="fechaUltrasonido"><br>
+    <span id="resultadoUltrasonido"></span><br>
+    <span id="fechaUltimaMenstruacion"></span><br>
+    <span id="fechaPartoUltrasonido"></span><br>
+    <span id="mensajeIngresaSemanasFecha"></span><br>
+</div>
 <script>
     // Lista de medicamentos para el primer buscador (sin disponibilidad)
     const medicamentos1 = [
@@ -329,6 +348,64 @@
         }
     }
 </script>
+<script>
+    fecha.addEventListener("change", calcularSemanas);
+    fechaUltrasonido.addEventListener("change", calcularEdadGestacional);
+    semanasUltrasonido.addEventListener("change", calcularEdadGestacional);
+
+ function calcularSemanas() {
+            let fechaInput = document.getElementById('fecha').value;
+
+            let fechaUltimaMenstruacion = new Date(fechaInput);
+            let fechaActual = new Date();
+            let diferenciaTiempo = fechaActual - fechaUltimaMenstruacion;
+            let diasPasados = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
+            let semanas = Math.floor(diasPasados / 7);
+            let dias = diasPasados % 7;
+            document.getElementById('resultado').innerText = `Edad gestacional: ${semanas}.${dias} SDG`;
+            
+            let fechaProbableParto = new Date(fechaUltimaMenstruacion);
+            fechaProbableParto.setDate(fechaProbableParto.getDate() + (281/*suma 40 semanas */));
+            let opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('fechaParto').innerText = `FPP: ${fechaProbableParto.toLocaleDateString('es-ES', opciones)}`;
+        }
+
+        function calcularEdadGestacional() {
+            let semanasUltrasonido = document.getElementById('semanasUltrasonido').value;
+            let fechaUltrasonido = document.getElementById('fechaUltrasonido').value;
+            
+            if (!semanasUltrasonido || !fechaUltrasonido) {
+                document.getElementById("mensajeIngresaSemanasFecha").innerText = "Igresa los datos faltantes";
+                return;
+            } else {document.getElementById("mensajeIngresaSemanasFecha").innerText = "";}
+            
+            let partes = semanasUltrasonido.split('.');
+            let semanas = parseInt(partes[0]);
+            let dias = partes.length > 1 ? parseInt(partes[1]) : 0;
+            
+            let fechaUltrasonidoDate = new Date(fechaUltrasonido);
+            let fechaActual = new Date();
+            let diferenciaTiempo = fechaActual - fechaUltrasonidoDate;
+            let diasPasados = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
+            
+            let totalDias = (semanas * 7) + dias + diasPasados;
+            let semanasFinal = Math.floor(totalDias / 7);
+            let diasFinal = totalDias % 7;
+            
+            document.getElementById('resultadoUltrasonido').innerText = `Edad gestacional: ${semanasFinal}.${diasFinal} SDG`;
+            
+            let fechaUltimaMenstruacion = new Date();
+            fechaUltimaMenstruacion.setDate(fechaUltimaMenstruacion.getDate() - totalDias);
+            let opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('fechaUltimaMenstruacion').innerText = `FUM por USG: ${fechaUltimaMenstruacion.toLocaleDateString('es-ES', opciones)}`;
+            
+            let fechaProbablePartoUltrasonido = new Date(fechaUltimaMenstruacion);
+            fechaProbablePartoUltrasonido.setDate(fechaProbablePartoUltrasonido.getDate() + (40 * 7));
+            document.getElementById('fechaPartoUltrasonido').innerText = `FPP: ${fechaProbablePartoUltrasonido.toLocaleDateString('es-ES', opciones)}`;
+        }   
+</script>
+
 
 </body>
 </html>
+
