@@ -43,6 +43,20 @@
     <span id="fechaPartoUltrasonido"></span><br>
     <span id="mensajeIngresaSemanasFecha"></span><br>
 </div>
+
+<h2>Dosis pedia</h2>
+<input type="text" id="buscarMedicamento" placeholder="Buscar medicamento" oninput="filtrarMedicamentos()">
+<ul id="listaMedicamentos"></ul>
+
+<input placeholder="Dosis ponderal" id="dosisPonderalCalculadora">
+<input placeholder="Peso (kg)" id="pesoCalculadora">
+<input placeholder="Mg" id="mgCalculadora">
+<input placeholder="Ml" id="mlCalculadora">
+<input placeholder="Frecuencia" id="frecuenciaMedicamentoCalculadora">
+<button id="calcularDosisPediatricaBoton">Calcular</button>
+<p><span id="resultadoCalculoPedia"></span></p>
+
+<!--Listas medicamentos-->
 <script>
     // Lista de medicamentos para el primer buscador (sin disponibilidad)
     const medicamentos1 = [
@@ -304,6 +318,10 @@
     // Agrega más medicamentos según sea necesario
     ];
 
+    // Lista dosis ponderal
+    const dosisPonderales = [
+    { "nombre": "Paracetamol " },
+    ]
     function buscarMedicamento(inputId, resultsId, medicamentos, mostrarDisponibilidad) {
         const query = document.getElementById(inputId).value.toLowerCase();
         const resultsDiv = document.getElementById(resultsId);
@@ -348,6 +366,7 @@
         }
     }
 </script>
+<!--Calculadora gyo-->
 <script>
     fecha.addEventListener("change", calcularSemanas);
     fechaUltrasonido.addEventListener("change", calcularEdadGestacional);
@@ -360,6 +379,7 @@
             let fechaActual = new Date();
             let diferenciaTiempo = fechaActual - fechaUltimaMenstruacion;
             let diasPasados = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
+            diasPasados -= 1; /*ajuste*/
             let semanas = Math.floor(diasPasados / 7);
             let dias = diasPasados % 7;
             document.getElementById('resultado').innerText = `Edad gestacional: ${semanas}.${dias} SDG`;
@@ -387,7 +407,7 @@
             let fechaActual = new Date();
             let diferenciaTiempo = fechaActual - fechaUltrasonidoDate;
             let diasPasados = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
-            
+            diasPasados -= 1; /*ajuste*/
             let totalDias = (semanas * 7) + dias + diasPasados;
             let semanasFinal = Math.floor(totalDias / 7);
             let diasFinal = totalDias % 7;
@@ -402,9 +422,67 @@
             let fechaProbablePartoUltrasonido = new Date(fechaUltimaMenstruacion);
             fechaProbablePartoUltrasonido.setDate(fechaProbablePartoUltrasonido.getDate() + (40 * 7));
             document.getElementById('fechaPartoUltrasonido').innerText = `FPP: ${fechaProbablePartoUltrasonido.toLocaleDateString('es-ES', opciones)}`;
-        }   
+        }
 </script>
-
+<!--Dosis pedia-->
+<script>
+    // Base de datos de medicamentos con sus valores predefinidos
+    const medicamentos = [
+      { nombre: "PARACETAMOL SUSPENSION 100MG/ML *<3 AÑOS", dosis: 15, peso: 5, mg: 100, ml: 1, frecuencia:"CADA 8 HORAS"},
+      { nombre: "PARACETAMOL JARABE 3.2G/100ML *2-12 AÑOS", dosis: 15, peso: 5, mg: 3200, ml: 100, frecuencia:"CADA 8 HORAS"},
+      { nombre: "IBUPROFENO SUSPENSION 2G/100ML *2-12 AÑOS", dosis: 8, peso: 5, mg: 2000, ml: 100, frecuencia:"CADA 8 HORAS" },
+      { nombre: "IBUPROFENO SUSPENSION 40MG/ML *6 MESES-2 AÑOS", dosis: 8, peso: 5, mg: 40, ml: 1, frecuencia:"CADA 8 HORAS" },
+      { nombre: "AMOXICILINA, ACIDO CLAVULANICO SUSPENSION 125, 31MG/5ML Clavipen ", dosis: 30, peso: 5, mg: 125, ml: 5, frecuencia:"CADA 8 HORAS" },
+      { nombre: "TRIMETOPRIMA/SULFAMETOXAZOL, SUSPENSION 0.8G, 4G/100ML 120ML *>2 MESES", dosis: 4, peso: 1, mg: 800, ml: 100, frecuencia:"CADA 12 HORAS" },
+      { nombre: "LORATADINA 1MG/ML <30KG 5ML >30KG 10ML *>2 AÑOS", dosis: 0.2, peso: 1, mg: 1, ml: 1, frecuencia:"CADA 24 HORAS" },
+      { nombre: "CLORFENAMINA JARABE 50MG/100ML FRASCO CON 60ML *>2 AÑOS", dosis: 0.06, peso: 1, mg: 50, ml: 100, frecuencia:"CADA 8 HORAS" },
+    ];
+  
+    function filtrarMedicamentos() {
+      let input = document.getElementById("buscarMedicamento").value.toLowerCase();
+      let lista = document.getElementById("listaMedicamentos");
+      lista.innerHTML = ""; // Limpiar lista anterior
+  
+      if (input === "") return; // No mostrar lista si el input está vacío
+  
+      medicamentos.forEach((medicamento) => {
+        if (medicamento.nombre.toLowerCase().includes(input)) {
+          let item = document.createElement("li");
+          item.textContent = medicamento.nombre;
+          item.onclick = () => seleccionarMedicamento(medicamento);
+          lista.appendChild(item);
+        }
+      });
+    }
+  
+    function seleccionarMedicamento(medicamento) {
+      document.getElementById("dosisPonderalCalculadora").value = medicamento.dosis;
+      document.getElementById("mgCalculadora").value = medicamento.mg;
+      document.getElementById("mlCalculadora").value = medicamento.ml;
+      document.getElementById("buscarMedicamento").value = medicamento.nombre;
+      document.getElementById("frecuenciaMedicamentoCalculadora").value = medicamento.frecuencia;
+  
+      document.getElementById("listaMedicamentos").innerHTML = ""; // Ocultar lista
+    }
+  
+    document.getElementById("calcularDosisPediatricaBoton").addEventListener("click", calcularDosisPediatrica);
+  
+    function calcularDosisPediatrica() {
+      let dosisPonderal = parseFloat(document.getElementById("dosisPonderalCalculadora").value);
+      let peso = parseFloat(document.getElementById("pesoCalculadora").value);
+      let mg = parseFloat(document.getElementById("mgCalculadora").value);
+      let ml = parseFloat(document.getElementById("mlCalculadora").value);
+      let frecuenciaMedicamentoCalculadora = document.getElementById("frecuenciaMedicamentoCalculadora").value;
+  
+      if (isNaN(dosisPonderal) || isNaN(peso) || isNaN(mg) || isNaN(ml) || mg === 0) {
+        alert("Por favor, ingresa valores válidos y asegúrate de que 'Mg' no sea 0.");
+        return;
+      }
+  
+      let resultadoCalculoPedia = (dosisPonderal * peso * ml) / mg;
+      document.getElementById("resultadoCalculoPedia").textContent = `${resultadoCalculoPedia.toFixed(2)}ML ${frecuenciaMedicamentoCalculadora}`;
+    }
+  </script>
 
 </body>
 </html>
