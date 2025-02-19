@@ -379,7 +379,7 @@
             let fechaActual = new Date();
             let diferenciaTiempo = fechaActual - fechaUltimaMenstruacion;
             let diasPasados = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
-            diasPasados -= 1; /*ajuste*/
+            /*diasPasados -= 1; ajuste1*/
             let semanas = Math.floor(diasPasados / 7);
             let dias = diasPasados % 7;
             document.getElementById('resultado').innerText = `Edad gestacional: ${semanas}.${dias} SDG`;
@@ -407,7 +407,7 @@
             let fechaActual = new Date();
             let diferenciaTiempo = fechaActual - fechaUltrasonidoDate;
             let diasPasados = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
-            diasPasados -= 1; /*ajuste*/
+            /*diasPasados -= 1; ajuste2*/
             let totalDias = (semanas * 7) + dias + diasPasados;
             let semanasFinal = Math.floor(totalDias / 7);
             let diasFinal = totalDias % 7;
